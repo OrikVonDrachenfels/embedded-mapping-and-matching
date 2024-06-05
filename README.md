@@ -1,28 +1,47 @@
-# Schematch
+# PRISMA - Privacy-Preserving Schema Matcher
 
-Please check [the Wiki](https://github.com/avielhauer/schematch/wiki) for further information on the project.
+This Project was implemented using the [Schematch](https://github.com/avielhauer/schematch) repository.
+Please check [the Wiki](https://github.com/avielhauer/schematch/wiki) for further information on the repository.
 
-This is a research prototype for automated schema matching, mainly developed by [Alexander Vielhauer](mailto:avielhauer@informatik.uni-marburg.de)
-at the Big Data Analytics group of Thorsten Papenbrock at Marburg University. Data dependencies as well as code for loading and handling them is developed by [Marcian Seeger](mailto:marcian.seeger@uni-marburg.de) (same research group).
+## Setup
+This project requires Java JDK 17 and Maven >=3.9.2. We suggest developing and running the project in IntelliJ IDEA.
+For setup, IntelliJ should guide you to install the correct Java JDK and download the Maven dependencies for you.
+In case of problems with Maven dependencies, try to [reload the project](https://www.jetbrains.com/help/idea/delegate-build-and-run-actions-to-maven.html#maven_reimport).
 
-**Please do not publish the code or data elsewhere.** This repository is only for teaching at Marburg University and Hasso-Plattner-Institut (Potsdam).
+You can run the project out of the box, as it comes with data and default configurations.
+For a successful run, you should see this log line at the end of your console:
+```
+[INFO ] <timestamp> [main] de.uni_marburg.schematch.Main - Ending Schematch
+```
+(taken from [wiki](https://github.com/avielhauer/schematch/wiki#setup))
 
-If you encounter any problems or have any questions, do not hesitate to write a mail to [Alexander Vielhauer](mailto:avielhauer@informatik.uni-marburg.de).
+To install and use PRISMA, LEAPME, and EmbDI we provide a [Docker Compose](https://docs.docker.com/compose/) file.
+Build the corresponding images by running:
 
-## Teaching
+```
+sudo docker compose --verbose -f sota.docker-compose.yml build
+```
 
-### UMR | StructureMatch: Schema Matching with Data Profiling (Seminar)
-#### Topic 1: State-of-the-Art Matchers
-Team members: TODO
-#### Topic 2: Metadata Matchers
-Team members: Leif Reuter, Lars Reuter
-#### Topic 3: Similarity Matrix Boosting (Similarity Flooding)
-Team members: TODO
-#### Topic 4: Similarity Matrix Boosting (Other)
-Team members: TODO
-#### Topic 5: Ensemble Matchers
-Team members: TODO
+Additionally, a Pyro server needs to be started. 
+The files can be found in `src/main/resources/pyro`.
+Download the required `metanome-cli-1.1.0.jar` and `pyro-distro-1.0-SNAPSHOT-distro.jar` from [here](https://github.com/sekruse/metanome-cli/releases/tag/v1.1.0) 
+and [here](https://github.com/HPI-Information-Systems/pyro/releases/tag/v1.0) and place it in the pyro directory.
+Install the required python dependencies using [poetry](https://python-poetry.org/). 
 
-### HPI | COSMA: Constraint-based Schema Matching (Master Project)
+## Running PRISMA
 
-TBA
+To run PRISMA, LEAPME, and EmbDI execute:
+```
+sudo docker compose --verbose -f sota.docker-compose.yml up
+```
+Start the Pyro server, which is required for Data Profiling using
+```python pyro_server.py```.
+
+
+To specify the to be used matchers and their settings, check out the `first_line_matchers.yaml`.
+The to be used datasets can be selected in `datasets.yaml`.
+
+Finally, running Schematch's Main function (e.g., using IntelliJ IDEA) will execute all defined
+scenarios.
+
+The run's result can be found in the `/results` folder.

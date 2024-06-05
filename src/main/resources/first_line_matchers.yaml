@@ -10,7 +10,7 @@ active: false
 ---
 name: "PRISMAMatcher"
 packageName: "metadata"
-active: false
+active: true
 params:
   xNetMFGammaStrucAttr: [0.5]
   topKRow: [-1, 0, 1, 2, 3]

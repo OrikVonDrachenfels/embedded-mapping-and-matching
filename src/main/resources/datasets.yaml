@@ -1,22 +1,44 @@
+# ---- Original Datasets ----
+
 #---
-#name: "ME_all"
-#path: "ME_all"
+#name: "ORIG_all"
+#path: "ORIG_all"
+
+#---
+#name: "ORIG_MTDN"
+#path: "ORIG_MTDN"
+
+#---
+#name: "ORIG_MTSN"
+#path: "ORIG_MTSN"
+
+#---
+#name: "ORIG_STSDD"
+#path: "ORIG_STSDD"
+
+#---
+#name: "ORIG_STSSD"
+#path: "ORIG_STSSD"
+
+# ---- Encrypted Datasets ----
 
 #---
 #name: "ENC_all"
 #path: "ENC_all"
 
----
-name: "ME_STDD"
-path: "ME_STDD"
 #---
-#name: "ME_single_table__different_data"
-#path: "ME_single_table__different_data"
+#name: "ENC_MTDN"
+#path: "ENC_MTDN"
+
 #---
-#name: "ME_structurally_identical_denormalized"
-#path: "ME_structurally_identical_denormalized"
-#isDenormalized: true
+#name: "ENC_MTSN"
+#path: "ENC_MTSN"
+
 #---
-#name: "ME_general_denormalized"
-#path: "ME_general_denormalized"
-#isDenormalized: true
+#name: "ENC_STSDD"
+#path: "ENC_STSDD"
+
+#---
+#name: "ENC_STSSD"
+#path: "ENC_STSSD"
+

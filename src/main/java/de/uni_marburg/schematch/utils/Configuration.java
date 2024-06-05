@@ -51,6 +51,9 @@ public class Configuration {
     private String performanceSummaryFileName;
     private String outputDir;
 
+    private float partialFDMaxError;
+    private boolean recomputeAllFDs;
+
     // FIXME: refactor to use log4j custom log level instead
     private int logLevelResults;
 
@@ -67,6 +70,7 @@ public class Configuration {
     private boolean evaluateFirstLineMatchers;
     private boolean readCacheFirstLineMatchers;
     private boolean writeCacheFirstLineMatchers;
+    private boolean writeFirstLineGroundTruth;
 
     // Step 3
     private boolean runSimMatrixBoostingOnFirstLineMatchers;
@@ -148,6 +152,11 @@ public class Configuration {
         CombinationGenerator<Object> combinationGenerator = new CombinationGenerator<>();
         for (Object object : matcherConfigs) {
             Map<String, Object> matcherConfig = (Map<String, Object>) object;
+            if (!(Boolean) matcherConfig.get("active")) {
+                log.info("Skipped loading first line matcher '{}' because it is marked as inactive.", matcherConfig.get("name"));
+                continue;
+            }
+
             String name = (String) matcherConfig.get("name");
             String packageName = (String) matcherConfig.get("packageName");
             List<MatcherConfiguration> matcherConfigurationList = new ArrayList<>();
@@ -272,7 +281,7 @@ public class Configuration {
             if (tokenizerConfig.get("params") instanceof List) {
                 log.error("Parsing of parameter lists not implemented yet. Use dictionary of possible parameter values" +
                         "and the program will deduce configurations for all possible parameter value combinations.");
-                throw new NotImplementedException();
+                throw new NotImplementedException("");
             } else {
                 Map<String, Object> paramSpacesMap = (Map<String, Object>) tokenizerConfig.get("params");
                 List<List<Object>> paramSpaces = new ArrayList<>();

@@ -2,11 +2,11 @@ package de.uni_marburg.schematch.data.metadata.dependency;
 
 import de.uni_marburg.schematch.data.Column;
 import de.uni_marburg.schematch.data.metadata.PdepTuple;
-import lombok.AllArgsConstructor;
+import de.uni_marburg.schematch.utils.MetadataUtils;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Data
 public class FunctionalDependency implements Dependency{
@@ -19,17 +19,44 @@ public class FunctionalDependency implements Dependency{
         this.dependant = right;
     }
 
+    public PdepTuple getPdepTuple(){
+        if(pdepTuple == null){
+            this.setPdepTuple(MetadataUtils.getPdep(this));
+        }
+        return pdepTuple;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(determinant, dependant);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        FunctionalDependency other = (FunctionalDependency) obj;
+        return other.getDependant().equals(getDependant()) && other.getDeterminant().equals(getDeterminant());
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("[");
-        for (Column column : determinant) {
-            sb.append(column.getLabel());
-            sb.append(", ");
-        }
-        sb.delete(sb.length() - 2, sb.length()); // Remove the trailing ", "
-        sb.append("]");
+        StringBuilder sb = new StringBuilder();
+        addColumns(sb, determinant);
         sb.append(" --> ");
+        sb.append(dependant.getTable().getName());
+        sb.append(".csv.");
         sb.append(dependant.getLabel());
+        if(pdepTuple != null){
+            sb.append(" (pdep ");
+            sb.append(pdepTuple.pdep);
+            sb.append(", ");
+            sb.append(pdepTuple.gpdep);
+            sb.append(")");
+        }
         return sb.toString();
     }
+
 }

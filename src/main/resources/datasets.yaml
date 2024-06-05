@@ -1,27 +1,22 @@
+#---
+#name: "ME_all"
+#path: "ME_all"
+
+#---
+#name: "ENC_all"
+#path: "ENC_all"
+
 ---
-name: "DeNorm"
-path: "DeNorm"
----
-name: "Efes-bib"
-path: "Efes-bib"
----
-name: "Efes-music"
-path: "Efes-music"
----
-name: "ISIA-inventory"
-path: "ISIA-inventory"
----
-name: "ISIA-real_estate2"
-path: "ISIA-real_estate2"
----
-name: "Pubs"
-path: "Pubs"
----
-name: "Sakila"
-path: "Sakila"
----
-name: "Valentine-Magellan"
-path: "Valentine-Magellan"
----
-name: "Valentine-Wikidata"
-path: "Valentine-Wikidata"
+name: "ME_STDD"
+path: "ME_STDD"
+#---
+#name: "ME_single_table__different_data"
+#path: "ME_single_table__different_data"
+#---
+#name: "ME_structurally_identical_denormalized"
+#path: "ME_structurally_identical_denormalized"
+#isDenormalized: true
+#---
+#name: "ME_general_denormalized"
+#path: "ME_general_denormalized"
+#isDenormalized: true

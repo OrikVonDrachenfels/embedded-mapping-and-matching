@@ -3,20 +3,27 @@ package de.uni_marburg.schematch.data;
 import de.uni_marburg.schematch.data.metadata.DatabaseMetadata;
 import de.uni_marburg.schematch.utils.Configuration;
 import de.uni_marburg.schematch.utils.InputReader;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.util.List;
 
-@Data
+@Getter
 public class Database {
+    private final Scenario scenario;
     private final String name;
     private final String path;
     private List<Table> tables;
     private DatabaseMetadata metadata;
     private int numColumns;
+    private DatabaseGraph graph;
+    private DatabaseFeatures databaseFeatures;
+    @Setter
+    private float profilingTime = 0;
 
-    public Database(String path) {
+    public Database(Scenario scenario, String path) {
+        this.scenario = scenario;
         this.name = new File(path).getName();
         this.path = path;
         this.tables = InputReader.readDataDir(this.path);
@@ -33,6 +40,10 @@ public class Database {
         }
         // set numColumns
         numColumns = currentOffset;
+
+        this.graph = new MetaNodesDatabaseGraph(this);
+        this.databaseFeatures = new DatabaseFeatures(this);
+        this.databaseFeatures.exportFeatures("target/features/" + scenario.getDataset().getName() +  "/" + scenario.getName());
     }
 
     public String getFullColumnNameByIndex(int idx) {

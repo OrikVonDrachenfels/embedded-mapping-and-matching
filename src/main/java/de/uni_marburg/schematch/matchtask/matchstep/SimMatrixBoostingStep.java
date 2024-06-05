@@ -48,7 +48,10 @@ public class SimMatrixBoostingStep extends MatchStep {
             }
             if (boostedSimMatrix == null) {
                 log.debug("Processing " + this.line + ". line sim matrix boosting on matcher: " + matcher.toString());
-                boostedSimMatrix = this.simMatrixBoosting.run(matchTask, this, matchTask.getSimMatrixFromPreviousMatchStep(this, matcher));
+                boostedSimMatrix = matchTask.getEvaluator().evaluateMatcherRuntime(
+                        matchTask, this, matcher,
+                        () -> this.simMatrixBoosting.run(matchTask, this, matchTask.getSimMatrixFromPreviousMatchStep(this, matcher))
+                );
             }
             matchTask.setSimMatrix(this, matcher, boostedSimMatrix);
         }
@@ -65,7 +68,7 @@ public class SimMatrixBoostingStep extends MatchStep {
 
             for (Matcher matcher : matchTask.getMatchersForLine(this.line)) {
                 float[][] simMatrix = matchTask.getSimMatrix(this, matcher);
-                OutputWriter.writeSimMatrix(outputMatchStepPath, matchTask, matcher.toString(), simMatrix);
+                OutputWriter.writeSimMatrix(outputMatchStepPath, matchTask, matcher.toString(), simMatrix, false);
                 matchTask.incrementCacheWrite();
             }
         }
@@ -79,7 +82,7 @@ public class SimMatrixBoostingStep extends MatchStep {
 
             for (Matcher matcher : matchTask.getMatchersForLine(this.line)) {
                 float[][] simMatrix = matchTask.getSimMatrix(this, matcher);
-                OutputWriter.writeSimMatrix(outputMatchStepPath, matchTask, matcher.toString(), simMatrix);
+                OutputWriter.writeSimMatrix(outputMatchStepPath, matchTask, matcher.toString(), simMatrix, false);
             }
         }
     }

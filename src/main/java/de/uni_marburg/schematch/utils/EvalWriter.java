@@ -1,6 +1,5 @@
 package de.uni_marburg.schematch.utils;
 
-import de.uni_marburg.schematch.data.Database;
 import de.uni_marburg.schematch.data.Dataset;
 import de.uni_marburg.schematch.evaluation.metric.Metric;
 import de.uni_marburg.schematch.evaluation.performance.Performance;
@@ -72,12 +71,12 @@ public class EvalWriter {
         }
     }
 
-    private void averagePerformances(Map<Metric, Map<MatchStep, Map<Matcher, Performance>>> performances, int n) {
+    private void aggregatePerformances(Map<Metric, Map<MatchStep, Map<Matcher, Performance>>> performances, int n) {
         for (Metric metric : performances.keySet()) {
             for (MatchStep matchStep : performances.get(metric).keySet()) {
                 for (Matcher matcher : performances.get(metric).get(matchStep).keySet()) {
                     float score = performances.get(metric).get(matchStep).get(matcher).getGlobalScore();
-                    performances.get(metric).get(matchStep).get(matcher).setGlobalScore(score/n);
+                    performances.get(metric).get(matchStep).get(matcher).setGlobalScore(metric.aggregatePerformance(score, n));
                 }
             }
         }
@@ -116,6 +115,9 @@ public class EvalWriter {
 
             Map<Metric, Map<MatchStep, Map<Matcher, Performance>>> performances = matchTask.getPerformances();
             for (Metric metric : matchTask.getMetrics()) {
+                if (!metric.runsOnSimilarityMatrices()) {
+                    continue;
+                }
                 for (MatchStep matchStep : matchTask.getMatchSteps()) {
                     if (matchStep.isDoEvaluate()) {
                         Path matchStepPath = scenarioPerformancePath.resolve(metric.toString()).resolve(matchStep.toString());
@@ -217,14 +219,14 @@ public class EvalWriter {
     }
 
     public void writeDatasetPerformance(Dataset dataset) {
-        averagePerformances(this.datasetPerformances, dataset.getScenarioNames().size());
+        aggregatePerformances(this.datasetPerformances, dataset.getScenarioNames().size());
         Path datasetPerformancePath = ResultsUtils.getPerformancePathForDataset(dataset);
         writePerformance(EvaluationLevel.DATASET, datasetPerformancePath, this.datasetPerformances);
         initializePerformances(this.datasetPerformances);
     }
 
     public void writeOverallPerformance(int numDatasets) {
-        averagePerformances(this.overallPerformances, numDatasets);
+        aggregatePerformances(this.overallPerformances, numDatasets);
         Path overallPerformancePath = ResultsUtils.getPerformancePathForOverall();
         writePerformance(EvaluationLevel.OVERALL, overallPerformancePath, this.overallPerformances);
     }

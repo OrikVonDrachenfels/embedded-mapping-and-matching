@@ -2,3 +2,17 @@
 name: "NonBinaryPrecisionAtGroundTruth"
 #---
 #name: "NonBinaryPrecisionAtNumGroundTruth"
+---
+name: "F1"
+---
+name: "Precision"
+---
+name: "Recall"
+---
+name: "Accuracy"
+---
+name: "MatcherRuntime"
+---
+name: "ProfilingRuntime"
+---
+name: "GraphBuildingRuntime"

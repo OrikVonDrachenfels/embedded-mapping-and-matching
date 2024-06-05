@@ -30,4 +30,13 @@ public class Table {
     public Column getColumn(int n) {
         return this.columns.get(n);
     }
+
+    public String pathRelativeToDataDirectory() {
+        String[] splitPath = path.split("/data");
+        return splitPath[splitPath.length-1];
+    }
+
+    public Column getColumnByName(String name) {
+        return this.columns.stream().filter(column -> column.getLabel().equals(name)).findFirst().orElseThrow();
+    }
 }

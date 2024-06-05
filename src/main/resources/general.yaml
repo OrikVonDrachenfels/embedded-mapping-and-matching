@@ -23,7 +23,12 @@ performanceOverviewFilePrefix: "performance_overview_"
 # directory name for matcher output results
 outputDir : "_outputs"
 # default base directory where data directories reside
-defaultDatasetBasePath: "data"
+defaultDatasetBasePath: "cosma_data"
+
+# Whether to recompute all FDs even if a dependency file is not empty
+recomputeAllFDs: False
+# Maximum error to allow when computing partial FDs
+partialFDMaxError: 0.03
 
 # evaluate performance for each attribute and attribute pair in ground truth
 # applies to all matching steps for which evaluation is enabled (see below)
@@ -48,6 +53,7 @@ saveOutputTablePairGeneration: False
 evaluateTablePairGeneration: False
 # Step 2: run first line matchers (i.e., matchers that use table data to match)
 saveOutputFirstLineMatchers: True
+writeFirstLineGroundTruth: True
 evaluateFirstLineMatchers: True
 readCacheFirstLineMatchers: False
 writeCacheFirstLineMatchers: False

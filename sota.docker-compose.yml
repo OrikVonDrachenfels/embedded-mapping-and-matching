@@ -1,0 +1,37 @@
+version: "3.0"
+services:
+  leapme:
+    image: schematch/leapme
+    build: src/main/resources/leapme
+    ports:
+      - "127.0.0.1:5000:5000"
+    command:
+      - "glove"
+    volumes:
+      - type: bind
+        source: ./data
+        target: /leapme/data
+  embdi:
+    image: schematch/embdi
+    build: src/main/resources/embdi
+    ports:
+      - "127.0.0.1:5001:5001"
+    volumes:
+      - type: bind
+        source: ./data
+        target: /embdi/data
+      - type: bind
+        source: ./cosma_data
+        target: /embdi/cosma_data
+      - type: bind
+        source: ./target/embdi_cache
+        target: /embdi/cache
+  prisma:
+    image: schematch/prisma
+    build: src/main/resources/prisma
+    ports:
+      - "127.0.0.1:5004:5004"
+    volumes:
+      - type: bind
+        source: ./target
+        target: /target # probably not working

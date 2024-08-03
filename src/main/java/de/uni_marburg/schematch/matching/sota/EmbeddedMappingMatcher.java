@@ -6,7 +6,6 @@ import de.uni_marburg.schematch.matchtask.MatchTask;
 import de.uni_marburg.schematch.matchtask.matchstep.MatchingStep;
 import de.uni_marburg.schematch.similarity.list.EuclideanDistance;
 import de.uni_marburg.schematch.similarity.list.ProbabilityMassFunction;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -17,7 +16,6 @@ import java.util.stream.IntStream;
  * Uninterpreted Schema Matching with Embedded Value Mapping under Opaque Column Names and Data Values
  */
 @NoArgsConstructor
-@AllArgsConstructor
 public class EmbeddedMappingMatcher extends Matcher {
 
     @Override
@@ -26,63 +24,36 @@ public class EmbeddedMappingMatcher extends Matcher {
     }
 
     public float[][] match(MatchTask matchTask, MatchingStep matchStep, int maxIterations) {
-        getLogger().debug("Running embedded matching matcher for scenario '{}'.",
-                matchTask.getScenario().getName());
-
-        // what the pseudo code looks like:
-        float[][] simMatrix;
         var scenario = matchTask.getScenario();
+        getLogger().debug("Running embedded matching matcher for scenario '{}'.",
+                scenario.getName());
         Database t1 = scenario.getSourceDatabase();
         Database t2 = scenario.getTargetDatabase();
-        // TODO: Alles
-//        var sMatchScore = Float.POSITIVE_INFINITY;
-//        var sSpace = getSchemaMatchSearchSpace();
-//        while (!sSpace.isEmpty()) {
-//            var tmpS = getNextSchemaMatch(sSpace);
-//            var vSpace = getValueMappingSpace();
-//            var vMapScore = Float.POSITIVE_INFINITY;
-//            var v1;
-//            while (!vSpace.isEmpty()) {
-//                var tmpV = getNextValueMapping(vSpace);
-//                float score = computeDissimilarity(tmpS, tmpV, t1, t2);
-//                if (score < vMapScore) {
-//                    vMapScore = score;
-//                    v1 = tmpV;
-//                }
-//                vSpace.remove(tmpV);
-//            }
-//            if (vMapScore < sMatchScore) {
-//                s = tmpS;
-//                v = v1;
-//                sMatchScore = vMapScore;
-//            }
-//            sSpace.remove(tmpS);
-//        }
-
-        // how I interpret 2.4:
         double[][] similarityByColumn = new double[t1.getNumColumns()][t2.getNumColumns()];
         ProbabilityMassFunction<String> similarityMeasure = new EuclideanDistance<>();
+
         getLogger().debug("Start creation of similarity matrix based on the probability mass function for scenario '{}'.",
-                matchTask.getScenario().getName());
+                scenario.getName());
         for (int i = 0; i < similarityByColumn.length; i++) {
             for (int j = 0; j < similarityByColumn[i].length; j++) {
                 similarityByColumn[i][j] = similarityMeasure.compare(t1.getColumnByIndex(i).getValues(), t2.getColumnByIndex(j).getValues());
             }
         }
         getLogger().debug("Successfully created similarity Matrix based on the probability mass function for scenario '{}'.",
-                matchTask.getScenario().getName());
-        int maxColumns = Integer.min(similarityByColumn.length, similarityByColumn[0].length);
+                scenario.getName());
+        int maxColumns = Integer.max(similarityByColumn.length, similarityByColumn[0].length);
         boolean[][] initialMatch = new boolean[maxColumns][maxColumns];
         IntStream.range(0, maxColumns).forEach(i -> initialMatch[i][i] = true);
         boolean[][] bestMatch = initialMatch;
         double disBestMatch = lookUpDissimilarity(similarityByColumn, bestMatch);
+
         //now to some two-opt switching
         int currentIteration = 0;
 //        boolean furtherImprovement = true;
 //        while (furtherImprovement && currentIteration <= maxIterations) {
 //            furtherImprovement = false;
         getLogger().debug("Start two-opt switching the scenario '{}'.",
-                matchTask.getScenario().getName());
+                scenario.getName());
         for (var outer = 0; outer < maxColumns; outer++) {
             for (var inner = outer; inner < maxColumns; inner++) {
                 currentIteration++;
@@ -92,7 +63,7 @@ public class EmbeddedMappingMatcher extends Matcher {
                 boolean[][] newMatch = twoOptSwitch(bestMatch, maxColumns, inner, outer);
 
                 double disNewMatch = lookUpDissimilarity(similarityByColumn, newMatch);
-                if (disNewMatch < disBestMatch) {
+                if (disNewMatch < disBestMatch) { //this can be optimized by only looking up the delta in dissimilarity
                     bestMatch = newMatch;
                     disBestMatch = disNewMatch;
 //                    furtherImprovement = true;
@@ -101,7 +72,7 @@ public class EmbeddedMappingMatcher extends Matcher {
         }
 //        }
         getLogger().debug("Finished two-opt switching the scenario '{}'.",
-                matchTask.getScenario().getName());
+                scenario.getName());
 
         float[][] finalResultAsPrimitiveFloat = new float[t1.getNumColumns()][t2.getNumColumns()];
         for (int i = 0; i < finalResultAsPrimitiveFloat.length; i++) {
@@ -135,20 +106,4 @@ public class EmbeddedMappingMatcher extends Matcher {
                                 .sum())
                 .sum();
     }
-
-//    private float computeDissimilarity(something[] tmpS, something[] tmpV, Database t1, Database t2) {
-//        for (int i = 1; i < tmpS.length; i++) {
-//            for (int i1 = 1; i1 < tmpV.length; i1++) {
-//                float y = 0;
-//                for (int j = 1; j < tmpS[i].length; j++) {
-//                    float x = 0;
-//                    for (int j1 = 0; j1 < tmpS[i].length) {
-//                        x += delta(j - valueMapping(i, i1, j1) * pi1(j1);
-//                    }
-//                    y += p(i, j) * x;
-//                }
-//                delta(i - matchedAttributeFunction(i1)) *
-//            }
-//        }
-//    }
 }

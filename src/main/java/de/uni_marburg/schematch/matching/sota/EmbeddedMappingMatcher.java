@@ -26,6 +26,9 @@ public class EmbeddedMappingMatcher extends Matcher {
     }
 
     public float[][] match(MatchTask matchTask, MatchingStep matchStep, int maxIterations) {
+        getLogger().debug("Running embedded matching matcher for scenario '{}'.",
+                matchTask.getScenario().getName());
+
         // what the pseudo code looks like:
         float[][] simMatrix;
         var scenario = matchTask.getScenario();
@@ -59,11 +62,15 @@ public class EmbeddedMappingMatcher extends Matcher {
         // how I interpret 2.4:
         double[][] similarityByColumn = new double[t1.getNumColumns()][t2.getNumColumns()];
         ProbabilityMassFunction<String> similarityMeasure = new EuclideanDistance<>();
+        getLogger().debug("Start creation of similarity matrix based on the probability mass function for scenario '{}'.",
+                matchTask.getScenario().getName());
         for (int i = 0; i < similarityByColumn.length; i++) {
             for (int j = 0; j < similarityByColumn[i].length; j++) {
                 similarityByColumn[i][j] = similarityMeasure.compare(t1.getColumnByIndex(i).getValues(), t2.getColumnByIndex(j).getValues());
             }
         }
+        getLogger().debug("Successfully created similarity Matrix based on the probability mass function for scenario '{}'.",
+                matchTask.getScenario().getName());
         int maxColumns = Integer.min(similarityByColumn.length, similarityByColumn[0].length);
         boolean[][] initialMatch = new boolean[maxColumns][maxColumns];
         IntStream.range(0, maxColumns).forEach(i -> initialMatch[i][i] = true);
@@ -74,6 +81,8 @@ public class EmbeddedMappingMatcher extends Matcher {
 //        boolean furtherImprovement = true;
 //        while (furtherImprovement && currentIteration <= maxIterations) {
 //            furtherImprovement = false;
+        getLogger().debug("Start two-opt switching the scenario '{}'.",
+                matchTask.getScenario().getName());
         for (var outer = 0; outer < maxColumns; outer++) {
             for (var inner = outer; inner < maxColumns; inner++) {
                 currentIteration++;
@@ -91,6 +100,8 @@ public class EmbeddedMappingMatcher extends Matcher {
             }
         }
 //        }
+        getLogger().debug("Finished two-opt switching the scenario '{}'.",
+                matchTask.getScenario().getName());
 
         float[][] finalResultAsPrimitiveFloat = new float[t1.getNumColumns()][t2.getNumColumns()];
         for (int i = 0; i < finalResultAsPrimitiveFloat.length; i++) {

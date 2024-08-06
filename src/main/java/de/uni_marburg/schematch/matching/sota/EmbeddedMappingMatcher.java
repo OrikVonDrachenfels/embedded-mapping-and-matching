@@ -64,6 +64,7 @@ public class EmbeddedMappingMatcher extends Matcher {
 
                 double disNewMatch = lookUpDissimilarity(similarityByColumn, newMatch);
                 if (disNewMatch < disBestMatch) { //this can be optimized by only looking up the delta in dissimilarity
+                    getLogger().debug("EmbeddedMappingMatcher improve match by switching: '{}' x '{}'", outer, inner);
                     bestMatch = newMatch;
                     disBestMatch = disNewMatch;
 //                    furtherImprovement = true;
@@ -87,7 +88,10 @@ public class EmbeddedMappingMatcher extends Matcher {
     // 0 1 0 -> 0 1 0  or  0 1 0 -> 1 0 0  or  ...
     // 0 0 1    1 0 0      0 0 1    0 0 1
     private static boolean[][] twoOptSwitch(boolean[][] bestMatch, int maxColumns, int inner, int outer) {
-        boolean[][] newMatch = bestMatch.clone();
+        boolean[][] newMatch = new boolean[bestMatch.length][bestMatch[0].length];
+        for (int i = 0; i < bestMatch.length; i++) {
+            System.arraycopy(bestMatch[i], 0, newMatch[i], 0, bestMatch[i].length);
+        }
         boolean[] lookUpHelp = new boolean[maxColumns];
         lookUpHelp[inner] = true;
         int oldOuter = IntStream.range(0, maxColumns).filter(index -> Arrays.equals(bestMatch[index], lookUpHelp)).findFirst().orElseThrow();

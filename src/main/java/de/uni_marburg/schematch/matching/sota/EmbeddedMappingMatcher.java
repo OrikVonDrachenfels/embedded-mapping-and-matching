@@ -43,7 +43,7 @@ public class EmbeddedMappingMatcher extends Matcher {
                 scenario.getName());
         int maxColumns = Integer.max(similarityByColumn.length, similarityByColumn[0].length);
         boolean[][] initialMatch = new boolean[maxColumns][maxColumns];
-        IntStream.range(0, maxColumns).forEach(i -> initialMatch[i][i] = true);
+        IntStream.range(0, maxColumns).forEach(i -> initialMatch[maxColumns - 1 - i][i] = true);
         boolean[][] bestMatch = initialMatch;
         double disBestMatch = lookUpDissimilarity(similarityByColumn, bestMatch);
 

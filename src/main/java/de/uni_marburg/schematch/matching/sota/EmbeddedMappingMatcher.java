@@ -9,7 +9,11 @@ import de.uni_marburg.schematch.similarity.list.ProbabilityMassFunction;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
@@ -39,6 +43,12 @@ public class EmbeddedMappingMatcher extends Matcher {
                 similarityByColumn[i][j] = similarityMeasure.compare(t1.getColumnByIndex(i).getValues(), t2.getColumnByIndex(j).getValues());
             }
         }
+        // randomization
+        long seed = System.currentTimeMillis();
+        ArrayList<double[]> similarities = new ArrayList<>(Arrays.stream(similarityByColumn).toList());
+        Collections.shuffle(similarities, new Random(seed));
+        similarityByColumn = similarities.toArray(new double[0][0]);
+
         getLogger().debug("Successfully created similarity Matrix based on the probability mass function for scenario '{}'.",
                 scenario.getName());
         int maxColumns = Integer.max(similarityByColumn.length, similarityByColumn[0].length);
@@ -81,7 +91,11 @@ public class EmbeddedMappingMatcher extends Matcher {
                 finalResultAsPrimitiveFloat[i][j] = bestMatch[i][j] ? 1.0f : 0.0f;
             }
         }
-        return finalResultAsPrimitiveFloat;
+
+        // undo randomization
+        ArrayList<float[]> finale = new ArrayList<>(Arrays.stream(finalResultAsPrimitiveFloat).toList());
+        unshuffle(finale, new Random(seed));
+        return finale.toArray(new float[0][0]);
     }
 
     // 1 0 x    0 0 1      1 x 0    0 1 0
@@ -109,5 +123,15 @@ public class EmbeddedMappingMatcher extends Matcher {
                                         match[sourceColumn][targetColumn] ? simMatrix[sourceColumn][targetColumn] : 0)
                                 .sum())
                 .sum();
+    }
+
+    private static <T> void unshuffle(List<T> list, Random rnd) {
+        int[] seq = new int[list.size()];
+        for (int i = seq.length; i >= 1; i--) {
+            seq[i - 1] = rnd.nextInt(i);
+        }
+        for (int i = 0; i < seq.length; i++) {
+            Collections.swap(list, i, seq[i]);
+        }
     }
 }
